@@ -1,0 +1,717 @@
+#:kivy 1.10.1
+#:import F kivy.factory.Factory
+
+<IdleScreen@Screen>:
+  BoxLayout: #buttons on right, others on left
+    orientation:'horizontal'
+    BoxLayout: #statusbar at top, others in the middle, buttons at bottom
+      orientation: 'vertical'
+      BoxLayout: #statusbar
+        orientation: 'horizontal'
+        size_hint_y: 0.1
+        Label:
+          id:printerName
+          text: "Unkown printer"
+          #text_size: self.size
+          halign: 'left'
+        Label:
+          id:statusBar
+          text: "Not Connected"
+          #text_size: self.size
+          halign: 'right'
+      GridLayout: #variable table
+        cols:3
+        size_hint_y: 0.7
+        Label:
+          text:"X"
+        Label:
+          text:"Y"
+        Label:
+          text:"Z"
+        #second row
+        Label:
+          id:xValue
+          text:"?"
+        Label:
+          id:yValue
+          text:"?"
+        Label:
+          id:zValue
+          text:"?"
+        #third row
+        Label:
+          text:"T"
+        Label:
+          id:toolValue
+          text:"?"
+        Label:
+          id:toolSetting
+          text:"?"
+        #fourth row
+        Label:
+          text:"B"
+        Label:
+          id:bedValue
+          text:"?"
+        Label:
+          id:bedSetting
+          text:"?"
+      BoxLayout: #buttons at bottom
+        orientation: 'horizontal'
+        size_hint_y: 0.2
+        id:buttons_row
+        disabled:True
+        Button:
+          text: "Home"
+          on_release: F.HomePopup().open()
+        Button:
+          text: "Move XY"
+          on_release:
+            root.parent.transition.direction = 'up'
+            root.parent.current = 'moveXYScreen'
+        Button:
+          text: "Move ZE"
+          on_release:
+            root.parent.transition.direction = 'up'
+            root.parent.current = 'moveZEScreen'
+    BoxLayout: #buttons to the right
+      orientation: 'vertical'
+      size_hint_x: 0.33
+      id:buttons_bar
+      disabled:True
+      Button:
+        text: "Print"
+        on_release:
+          root.parent.transition.direction = 'left'
+          root.parent.current = 'gcodeScreen'
+      Button:
+        text:'Temp\nFilament'
+        halign: 'center'
+        on_release:
+          root.parent.transition.direction = 'left'
+          root.parent.current = 'tempScreen'
+      Button:
+        text: "Adjust"
+        on_release: 
+          root.parent.transition.direction = 'left'
+          root.parent.current = 'adjustScreen'
+      Button:
+        text: "Macros"
+        on_release:
+          root.parent.transition.direction = 'left'
+          root.parent.current = 'macroScreen'
+
+<PrintScreen@Screen>
+  on_touch_down: app.handleScreenSaver('restart')
+  on_enter: app.handleScreenSaver('start')
+  on_leave: app.handleScreenSaver('stop')
+  BoxLayout: #statusbar on top, variables in the middle, buttons and more variables in the bottom
+    orientation:'vertical'
+    Label:
+      size_hint_y: 0.15
+      id:fileName
+    GridLayout: #upper (wide) variable table
+      size_hint_y: 0.5
+      cols:7
+      Label:
+        text:"X"
+      Label:
+        text:"Y"
+      Label:
+        text:"Z"
+      Label:
+        text:"T"
+        size_hint_x: .8
+      Label:
+        text:"Ts"
+        size_hint_x: .6
+      Label:
+        text:"B"
+        size_hint_x: .8
+      Label:
+        text:"Bs"
+        size_hint_x: .6
+      #second row
+      Label:
+        id:xValue
+      Label:
+        id:yValue
+      Label:
+        id:zValue
+      Label:
+        id:toolValue
+        size_hint_x: .8
+      Label:
+        id:toolSetting
+        size_hint_x: .6
+      Label:
+        id: bedValue
+        size_hint_x: .8
+      Label:
+        id: bedSetting
+        size_hint_x: .6
+    BoxLayout:
+      orientation: 'horizontal'
+      size_hint_y: 0.2
+      ProgressBar:
+        id: printProgress
+      Label:
+        size_hint_x: 0.2
+        id: printProgressText
+    BoxLayout: #statusbar
+      orientation: 'horizontal'
+      size_hint_y: 0.25
+      Label:
+        id: printTime
+      Label:
+        id: timeLeft
+      Label:
+        id: estimatedEnd
+    BoxLayout: #variables and bottom buttons on the left, buttons on the right
+      orientation: 'horizontal'
+      BoxLayout: #variables on the top, buttons on the bottom
+        orientation: 'vertical'
+        GridLayout: #lower (narrow) variable table
+          cols: 6
+          Label:
+            text: 'Fan'
+          Label:
+            text: 'BS'
+          Label:
+            text: 'EF'
+          Label:
+            text: 'SF'
+          Label:
+            text: 'SpR'
+          Label:
+            text: 'SpT'
+          Label:
+            id: fanValueText
+          Label:
+            id: babyStepValue
+          Label:
+            id: extrusionFactorValue
+          Label:
+            id: speedFactorValue
+          Label:
+            id: speedRequesed
+          Label:
+            id: speedTop
+        BoxLayout: #buttons on the bottom
+          orientation: 'horizontal'
+          size_hint_y: 0.6
+          Button:
+            text: 'ScreenSvr'
+            on_release: 
+              root.parent.transition.direction = 'up'
+              root.parent.current = 'printScreenSaver'
+          Button:
+            id: pauseResumeStopButton
+            halign: 'center'
+            text: 'Pause'
+            on_release:
+              app.pauseResumeButton(self.text)
+          Button:
+            text: 'Temp\nFilament'
+            halign: 'center'
+            on_release:
+              root.parent.transition.direction = 'up'
+              root.parent.current = 'tempScreen'
+      BoxLayout: #buttons on the right
+        orientation: 'vertical'
+        size_hint_x: 0.33
+        Button:
+          text: "Adjust"
+          on_release: 
+            root.parent.transition.direction = 'left'
+            root.parent.current = 'adjustScreen'
+        Button:
+          text: "Macros"
+          on_release:
+            root.parent.transition.direction = 'left'
+            root.parent.current = 'macroScreen'
+
+#adding a value to the floatlayout looks a bit strange, but it does work perfectly
+<PrintScreenSaver@Screen>
+  BoxLayout:
+    orientation: 'horizontal'
+    on_touch_down:
+      root.parent.transition.direction = 'down'
+      root.parent.current = 'printScreen'
+    FloatLayout:
+      size_hint_x: 0.65
+      id: printProgress
+      value: 0 
+      canvas:
+        Color:
+          rgb: 0, 0.6, 1  
+        Ellipse:
+          pos: 0,20
+          size: 200, 200
+          angle_start: 0
+          angle_end: 360*printProgress.value/100
+      Label:
+        id: printProgressText
+        font_size: 80
+        outline_width: 2
+    BoxLayout:
+      size_hint_x: 0.35
+      orientation: 'vertical'
+      Label:
+        id: printTime
+        font_size: 20
+      Label:
+        id: timeLeft
+        font_size: 20
+      Label:
+        id: estimatedEnd
+        font_size: 20
+
+<HomePopup@Popup>
+  title: 'Home menu'
+  size_hint_y:0.8
+  BoxLayout:
+    orientation: 'vertical'
+    Button:
+      size_hint_y:0.3
+      text: 'Home All'
+      on_release:
+        app.run_gcode('G28', '')
+        root.dismiss()
+    BoxLayout:
+      size_hint_y:0.3
+      orientation: 'horizontal'
+      Button:
+        text: 'Home X'
+        on_release:
+          app.run_gcode('G28 X', '')
+          root.dismiss()
+      Button:
+        text: 'Home Y'
+        on_release:
+          app.run_gcode('G28 Y', '')
+          root.dismiss()
+      Button:
+        text: 'Home Z'
+        on_release:
+          app.run_gcode('G28 Z', '')
+          root.dismiss()
+      Button:
+        text: 'Bed level'
+        on_release:
+          app.run_gcode('G32', '')
+          root.dismiss()
+    Button:
+      size_hint_y:0.3
+      text: 'Cancel'
+      on_release:
+        root.dismiss()
+
+#Must be used in screen manager!
+<MoveXYScreen@Screen>:
+#TODO endstops, motors off?
+  BoxLayout:
+    orientation: 'vertical'
+    BoxLayout:
+      orientation: 'horizontal'
+      GridLayout:
+        cols: 3
+        Label:
+          text:''
+        Button:
+          text:'Y-'
+          on_release: app.run_gcode("M120\nG91\nG1 Y-"+amount.text[:2]+" F12000\nM121", '', requestResponse = True)
+        Label:
+          text:''
+        Button:
+          text:'X-'
+          on_release: app.run_gcode("M120\nG91\nG1 X-"+amount.text[:2]+" F12000\nM121", '', requestResponse = True)
+        Label:
+          text:''
+        Button:
+          text:'X+'
+          on_release: app.run_gcode("M120\nG91\nG1 X"+amount.text[:2]+" F12000\nM121", '', requestResponse = True)
+        Label:
+          text:''
+        Button:
+          text:'Y+'
+          on_release: app.run_gcode("M120\nG91\nG1 Y"+amount.text[:2]+" F12000\nM121", '', requestResponse = True)
+        Label:
+          text:''
+      BoxLayout:
+        size_hint_x: 0.33
+        orientation: 'vertical'
+        Spinner:
+          id: amount
+          text:'10mm'
+          values: ('0.1mm', '1mm', '10mm', '50mm')
+        Label:
+          id: xValue
+          halign: 'center'
+          text: 'X\n?'
+        Label:
+          id: yValue
+          halign: 'center'
+          text: 'Y\n?'
+    BoxLayout:
+      orientation: 'horizontal'
+      size_hint_y: 0.2
+      Button:
+        text: 'Home All'
+        on_release: app.run_gcode('G28', '')
+      Button:
+        text: 'Home'
+        on_release: F.HomePopup().open()
+      Button:
+        text: "Move ZE"
+        on_release:
+          root.parent.transition.direction = 'up'
+          root.parent.current = 'moveZEScreen'
+      Button:
+        text: 'Back'
+        on_release: 
+          root.parent.transition.direction = root.returnDirection
+          root.parent.current = root.returnScreen
+
+<MoveZEScreen@Screen>:
+#TODO endstops, motors off? probe!
+  BoxLayout:
+    orientation: 'vertical'
+    BoxLayout:
+      orientation: 'horizontal'
+      GridLayout:
+        cols: 4
+        Button:
+          text:'Z+'
+          on_release: app.run_gcode("M120\nG91\nG1 Z"+amount.text[:2]+" F12000\nM121", '', requestResponse = True)
+        Spinner:
+          id: amount
+          text:'5mm'
+          values: ('0.05mm', '0.5mm', '5mm', '25mm')
+        Button:
+          text:'Extrude'
+          on_release: app.run_gcode("M120\nG91\nG1 E"+feed.text[:2]+" F600\nM121", '', requestResponse = True)
+        Spinner:
+          id: feed
+          text:'5mm'
+          values: ('1mm', '5mm', '10mm', '20mm', '50mm', '100mm')
+        Button:
+          text:'Z-'
+          on_release: app.run_gcode("M120\nG91\nG1 Z-"+amount.text[:2]+" F12000\nM121", '', requestResponse = True)
+        Label:
+          id: zValue
+          halign: 'center'
+          text:'Z\n?'
+        Button:
+          text:'Retract'
+          on_release: app.run_gcode("M120\nG91\nG1 E-"+feed.text[:2]+" F600\nM121", '', requestResponse = True)
+        Label:
+          id: eValue
+          halign: 'center'
+          text:'E\n?'
+    BoxLayout:
+      orientation: 'horizontal'
+      size_hint_y: 0.2
+      Button:
+        text: 'Home All'
+        on_release: app.run_gcode('G28', '')
+      Button:
+        text: 'Move XY'
+        on_release:
+          root.parent.transition.direction = 'up'
+          root.parent.current = 'moveXYScreen'
+      Button:
+        text: 'Home'
+        on_release: F.HomePopup().open()
+      Button:
+        text: 'Back'
+        on_release: 
+          root.parent.transition.direction = root.returnDirection
+          root.parent.current = root.returnScreen
+
+<AdjustScreen@Screen>
+  on_pre_enter:
+    app.updateAdjustScreen(True)
+  BoxLayout:
+    orientation: 'vertical'
+    BoxLayout:
+      orientation: 'horizontal'
+      GridLayout:
+        cols:3
+        Label:
+          text:"Babystep"
+        Label:
+          text:"Speed f"
+        Label:
+          text:"Extrusion f"
+        Button:
+          text: 'Up'
+          on_release:
+            root.ids.babyStepValue.text = '{:4.2f}'.format(float(root.ids.babyStepValue.text) + 0.05)
+            app.adjust(root.ids.liveupdButton.state=='down', 'babystep', root.ids.babyStepValue.text)
+        Button:
+          text: '+'
+          on_release:
+            root.ids.speedFactorValue.text = '{:4.0f}'.format(float(root.ids.speedFactorValue.text) + 10)
+            app.adjust(root.ids.liveupdButton.state=='down', 'speedf', root.ids.speedFactorValue.text)
+        Button:
+          text: '+'
+          on_release:
+            root.ids.extrusionFactorValue.text = '{:4.0f}'.format(float(root.ids.extrusionFactorValue.text) + 1)
+            app.adjust(root.ids.liveupdButton.state=='down', 'extrf', root.ids.extrusionFactorValue.text)
+        Label:
+          id: babyStepValue
+        Label:
+          id: speedFactorValue
+        Label:
+          id: extrusionFactorValue
+        Button:
+          text: 'Down'
+          on_release:
+            root.ids.babyStepValue.text = '{:4.2f}'.format(float(root.ids.babyStepValue.text) - 0.05)
+            app.adjust(root.ids.liveupdButton.state=='down', 'babystep', root.ids.babyStepValue.text)
+        Button:
+          text: '-'
+          on_release:
+            root.ids.speedFactorValue.text = '{:4.0f}'.format(float(root.ids.speedFactorValue.text) - 10)
+            app.adjust(root.ids.liveupdButton.state=='down', 'speedf', root.ids.speedFactorValue.text)
+        Button:
+          text: '-'
+          on_release:
+            root.ids.extrusionFactorValue.text = '{:4.0f}'.format(float(root.ids.extrusionFactorValue.text) - 1)
+            app.adjust(root.ids.liveupdButton.state=='down', 'extrf', root.ids.extrusionFactorValue.text)
+      BoxLayout:
+        size_hint_x: 0.33
+        orientation: 'vertical'
+        Label:
+          text: "Fan"
+          size_hint_y: 0.1
+        Slider:
+          id: fanValue
+          orientation: 'vertical'
+          on_touch_up:
+            app.adjust(root.ids.liveupdButton.state=='down', 'fan', self.value)
+      
+    BoxLayout:
+      orientation: 'horizontal'
+      size_hint_y: 0.2
+      Button:
+        disabled: True if root.ids.liveupdButton.state == 'down' else False
+        text: 'Set'
+        on_release:
+          app.adjust(True, 'babystep', root.ids.babyStepValue.text)
+          app.adjust(True, 'speedf', root.ids.speedFactorValue.text)
+          app.adjust(True, 'extrf', root.ids.extrusionFactorValue.text)
+          app.adjust(True, 'fan', root.ids.fanValue.value)
+      ToggleButton:
+        id: liveupdButton
+        text: 'Live upd'
+        on_release:
+          app.adjust(root.ids.liveupdButton.state=='down', 'babystep', root.ids.babyStepValue.text)
+          app.adjust(root.ids.liveupdButton.state=='down', 'speedf', root.ids.speedFactorValue.text)
+          app.adjust(root.ids.liveupdButton.state=='down', 'extrf', root.ids.extrusionFactorValue.text)
+          app.adjust(root.ids.liveupdButton.state=='down', 'fan', root.ids.fanValue.value)
+      Button:
+        text: 'Refresh'
+        disabled: True if root.ids.liveupdButton.state == 'down' else False
+        on_release: app.updateAdjustScreen(False)
+      Button:
+        text: 'Back'
+        on_release: 
+          root.parent.transition.direction = root.returnDirection
+          root.parent.current = root.returnScreen
+
+
+
+<TempScreen@Screen>
+  on_pre_enter:
+    app.changeToExtState(True)
+  on_leave:
+    app.changeToExtState(False)
+  BoxLayout:
+    orientation: 'vertical'
+    GridLayout:
+      cols: 3
+      #row1, heading
+      Label
+      Label:
+        text: 'Current'
+      Label:
+        text: 'Active'
+      #row2, bed
+      Label:
+        text: 'Bed'
+      Label:
+        id: bedValue
+      Spinner:
+        id: bedSetting
+        values: ('0', '55', '60', '65', '90', '100', '110')
+        on_text: 
+          app.run_gcode('M140 S'+self.text, '') #this will set the temp each time it changes on the remote - it doesn't do any harm 
+      #row3, tool
+      Label:
+        text: 'Tool'
+      Label:
+        id: toolValue
+      Spinner:
+        id: toolSetting
+        values: ('0', '180', '190', '200', '210', '220', '235')
+        on_text: app.run_gcode('T0\nG10 S'+self.text, '')
+
+    BoxLayout:
+      size_hint_y: 0.3
+      orientation: 'horizontal'
+      Label:
+        text: 'Filament:'
+      Label:
+        id: currentFilament
+        text: '?'
+    BoxLayout:
+      orientation: 'horizontal'
+      size_hint_y: 0.3
+      Button:
+        text: 'Load' 
+        disabled:True
+        id: loadUnloadButton
+        on_release: app.filament(self.text, "")
+      Button:
+        text: 'Change'
+        disabled:True
+        id: changeButton
+        on_release: app.filament(self.text, root.ids.currentFilament.text)
+      Button:
+        text: 'Cooldown'
+        on_release: app.run_gcode('M104 S0\nM140 S0', '')
+      Button:
+        text: 'Back'
+        on_release: 
+          root.parent.transition.direction = root.returnDirection
+          root.parent.current = root.returnScreen
+
+
+
+<FileScreen@Screen>:
+  on_pre_enter:
+    app.setFileSystem(root.fs, root)
+  on_enter:
+    files._update_files()
+  BoxLayout:
+    orientation: 'vertical'
+    FileChooserListView
+      id: files
+      on_submit: app.run_file(root.run_prefix, files.selection[0][1:])
+    BoxLayout:
+      orientation: 'horizontal'
+      size_hint_y: 0.2
+      Button:
+        text: 'OK'
+        on_release: app.run_file(root.run_prefix, files.selection[0][1:])
+      Button:
+        text: 'Cancel'
+        on_release:
+          root.parent.transition.direction = root.returnDirection
+          root.parent.current = root.returnScreen
+
+
+<DuetMenuMainScreen>:
+  ScreenManager:
+    id: _screen_manager
+    IdleScreen:
+      name: 'idleScreen'
+    PrintScreen:
+      name: 'printScreen'
+    PrintScreenSaver:
+      name: 'printScreenSaver'
+    FileScreen:
+      name: 'gcodeScreen'
+      returnScreen: 'idleScreen'
+      returnDirection: 'right'
+      fs: app.gcodeFs
+      run_prefix: 'gcode'  
+    FileScreen:
+      name: 'macroScreen'
+      returnScreen: 'idleScreen'
+      returnDirection: 'right'
+      fs: app.macroFs
+      run_prefix: 'macro'  
+    MoveXYScreen:
+      returnScreen: 'idleScreen'
+      returnDirection: 'down'
+      name: 'moveXYScreen'
+    MoveZEScreen:
+      returnScreen: 'idleScreen'
+      returnDirection: 'down'
+      name: 'moveZEScreen'
+    AdjustScreen:
+      returnScreen: 'idleScreen'
+      returnDirection: 'right'
+      name: 'adjustScreen'
+    TempScreen:
+      returnScreen: 'idleScreen'
+      returnDirection: 'right'
+      name: 'tempScreen'
+
+
+
+<DuetMessage@Popup>
+  BoxLayout:
+    orientation: 'vertical'
+    Label:
+      id: popupLabel
+    Button:
+      text: 'OK'
+      size_hint_y: 0.3
+      on_release: root.dismiss()
+
+<DuetDecide@Popup>
+  auto_dismiss: False
+  BoxLayout:
+    orientation: 'vertical'
+    Label:
+      id: popupLabel
+    BoxLayout:
+      orientation: 'horizontal'
+      size_hint_y: 0.3
+      Button:
+        text: 'OK'
+        id: okButton
+        on_release: root.dismiss()
+      Button:
+        text: 'Cancel'
+        on_release: root.dismiss()
+
+<DuetSelect@Popup>
+  auto_dismiss: False
+  size_hint_y: 0.6
+  BoxLayout:
+    orientation: 'vertical'
+    Spinner:
+      size_hint_y: 0.3
+      id: popupSpinner
+    BoxLayout:
+      orientation: 'horizontal'
+      size_hint_y: 0.3
+      Button:
+        text: 'OK'
+        id: okButton
+        on_release: root.dismiss()
+      Button:
+        text: 'Cancel'
+        on_release: root.dismiss()
+
+<DuetStopResume@Popup>
+  size_hint_y: 0.5
+  #auto_dismiss: False
+  title: 'Stop or resume print?'
+  BoxLayout:
+    orientation: 'horizontal'
+    Button:
+      text: 'Stop'
+      on_release: 
+        app.run_gcode('M0 H1', '')
+        root.dismiss()
+    Button:
+      text: 'Resume'
+      on_release:
+        app.run_gcode('M24', '')
+        root.dismiss()
