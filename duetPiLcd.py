@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from dwcinterface import DWCConnection
 
 from datetime import timedelta, datetime
@@ -67,7 +67,7 @@ class DuetMenuMainScreen(FloatLayout):
       if plusCurrent:
         res = datetime.now()
         res = res + timedelta(seconds=time)
-        elementRoot.ids[elementName].text = '{:%H:%m:%S}'.format(res)
+        elementRoot.ids[elementName].text = '{:%H:%M:%S}'.format(res)
       else:
         time = int(time)
         days = 0
